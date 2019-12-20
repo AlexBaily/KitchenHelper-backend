@@ -14,6 +14,6 @@ func locationHandler(w http.ResponseWriter, r *http.Request) {
 
 	//Get the uuid pased from the authMiddleware context
 	uuid := r.Context().Value("sub")
-	dataJson := queryTable(uuid.(string), exertable)
+	dataJson := queryTable(uuid.(string), kitchenTable)
 	w.Write(dataJson)
 }
