@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"fmt"
 )
 
 //Http handler for responding to http/s requests.
@@ -11,6 +12,7 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("statusDescription", "200 OK")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	fmt.Printf("%d", r)
 
 	w.Write([]byte("{\"Route\":\"Test\"}"))
 }

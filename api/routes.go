@@ -1,11 +1,25 @@
 package api
 
-import "github.com/gorilla/mux"
+import (
+	"github.com/gorilla/mux"
+	"github.com/codegangsta/negroni"
+) 
 
-func setRoutes() (router *mux.Router) {
-	router = mux.NewRouter()
+//Setup the routes and middlware
+func setRoutes() (n *negroni.Negroni) {
+
+	router := mux.NewRouter()
 	router.HandleFunc("/", rootHandler)
-	router.HandleFunc("/exercises", locationHandler)
-	router.Use(authMiddleware)
-	return router
+	router.HandleFunc("/locations", locationHandler)
+
+	//Set the jwt handler which will verify the token.
+	//Let negroni handle this.
+	tokenMiddleware := verifyToken()
+	n = negroni.New()
+	n.Use(negroni.HandlerFunc(tokenMiddleware.HandlerWithNext))
+	n.UseHandler(router)
+	
+	return n
+
+
 }
