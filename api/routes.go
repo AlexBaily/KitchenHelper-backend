@@ -10,7 +10,8 @@ func setRoutes() (n *negroni.Negroni) {
 
 	router := mux.NewRouter()
 	router.HandleFunc("/", rootHandler)
-	router.HandleFunc("/locations", locationHandler)
+	router.HandleFunc("/locations", locationGetHandler).
+		Methods("GET")
 
 	//Set the jwt handler which will verify the token.
 	//Let negroni handle this.
