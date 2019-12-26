@@ -3,17 +3,21 @@ package api
 import (
 	"fmt"
         "log"
+        "time"
         "strings"
 	"encoding/json"
 	"KitchenHelper-backend/models"
 
-	"github.com/aws/aws-sdk-go/aws"
+        "github.com/aws/aws-sdk-go/aws"
+        "github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/expression"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 )
 
+//Todo: Update so this returns an error instead of just printing out
+//  This will allow us to return a proper HTTP response code.
 func queryLocations(UserID string, table string)(queryJson []byte) {
         sess := session.Must(session.NewSessionWithOptions(session.Options{
                 SharedConfigState: session.SharedConfigEnable,
@@ -86,6 +90,65 @@ func queryLocations(UserID string, table string)(queryJson []byte) {
         log.Printf("records %+v", recs[0])
         return
 
+}
+
+func postLocation(UserID string, table string, locName string) () {
+        sess := session.Must(session.NewSessionWithOptions(session.Options{
+                SharedConfigState: session.SharedConfigEnable,
+        }))
+
+        svc := dynamodb.New(sess)
+
+        //Create the UpdateItemInput for updating the DynamoDB table.
+        input := &dynamodb.UpdateItemInput{
+                Key: map[string]*dynamodb.AttributeValue{
+                        "UserID": {
+                            S: aws.String(UserID),
+                        },
+                        "productIdentifier": {
+                            S: aws.String(locName),
+                        },
+                    },
+                ExpressionAttributeNames: map[string]*string{
+                        "#C": aws.String("CreatedAt"),
+                    },
+                ExpressionAttributeValues: map[string]*dynamodb.AttributeValue {
+                        ":c": {
+                                S: aws.String(time.Now().String()),
+                        },
+                },
+                TableName: aws.String(table),
+                UpdateExpression: aws.String("SET #C = :c"),
+        }
+        result, err := svc.UpdateItem(input)
+        if err != nil {
+                if aerr, ok := err.(awserr.Error); ok {
+                    switch aerr.Code() {
+                    case dynamodb.ErrCodeConditionalCheckFailedException:
+                        fmt.Println(dynamodb.ErrCodeConditionalCheckFailedException, aerr.Error())
+                    case dynamodb.ErrCodeProvisionedThroughputExceededException:
+                        fmt.Println(dynamodb.ErrCodeProvisionedThroughputExceededException, aerr.Error())
+                    case dynamodb.ErrCodeResourceNotFoundException:
+                        fmt.Println(dynamodb.ErrCodeResourceNotFoundException, aerr.Error())
+                    case dynamodb.ErrCodeItemCollectionSizeLimitExceededException:
+                        fmt.Println(dynamodb.ErrCodeItemCollectionSizeLimitExceededException, aerr.Error())
+                    case dynamodb.ErrCodeTransactionConflictException:
+                        fmt.Println(dynamodb.ErrCodeTransactionConflictException, aerr.Error())
+                    case dynamodb.ErrCodeRequestLimitExceeded:
+                        fmt.Println(dynamodb.ErrCodeRequestLimitExceeded, aerr.Error())
+                    case dynamodb.ErrCodeInternalServerError:
+                        fmt.Println(dynamodb.ErrCodeInternalServerError, aerr.Error())
+                    default:
+                        fmt.Println(aerr.Error())
+                    }
+                } else {
+                    // Print the error, cast err to awserr.Error to get the Code and
+                    // Message from an error.
+                    fmt.Println(err.Error())
+                }
+                return
+        }
+        fmt.Println(result.ConsumedCapacity)
 }
 
 

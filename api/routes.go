@@ -12,6 +12,10 @@ func setRoutes() (n *negroni.Negroni) {
 	router.HandleFunc("/", rootHandler)
 	router.HandleFunc("/locations", locationGetHandler).
 		Methods("GET")
+	//Unsure whether to use POST or PUT here.
+	//Using POST as it's /locations not /locations/{id}
+	router.HandleFunc("/locations", locationPostHandler).
+		Methods("POST")
 
 	//Set the jwt handler which will verify the token.
 	//Let negroni handle this.
