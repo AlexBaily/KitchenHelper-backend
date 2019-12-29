@@ -7,9 +7,8 @@ type LocRecord struct {
 	Location	string `json:"location"`
 }
 
-/*type productRecord struct {
-	UserID       string
+type ProductRecord struct {
 	ProductIdentifier string
 	ProductName string
 	Quantity       int
-}*/
+}

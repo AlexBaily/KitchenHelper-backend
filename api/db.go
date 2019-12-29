@@ -152,56 +152,58 @@ func postLocation(UserID string, table string, locName string) () {
 }
 
 
-/*
-func queryProducts(UserID string, location string,table string)(queryJson []byte) {
+func queryProducts(UserID string, location string, table string)(queryJson []byte) {
         sess := session.Must(session.NewSessionWithOptions(session.Options{
                 SharedConfigState: session.SharedConfigEnable,
         }))
 
         svc := dynamodb.New(sess)
 
-        //Filter and Projection are required for the expression builder.
-        filter := expression.Name("UserID").Equal(expression.Value(UserID))
+
+        //keyCondition and Projection are required for the expression builder.
+        userIDCondition  := expression.Key("UserID").Equal(expression.Value(UserID))
+        locationCondition := expression.Key("productIdentifier").BeginsWith(location)
         projection := expression.NamesList(
                 expression.Name("productIdentifier"),
-                expression.Name("ProductName"),
-                expression.Name("Quantity"),
+                expression.Name("productName"),
+                expression.Name("quantity"),
         )
         expr, err := expression.NewBuilder().
-                WithFilter(filter).
+                WithKeyCondition(userIDCondition.And(locationCondition)).
                 WithProjection(projection).
                 Build()
         if err != nil {
                 fmt.Println(err)
         }
         //Load up the parameters into a struct
-        params := &dynamodb.ScanInput{
+        params := &dynamodb.QueryInput{
+                KeyConditionExpression:    expr.KeyCondition(),
                 ExpressionAttributeNames:  expr.Names(),
                 ExpressionAttributeValues: expr.Values(),
-                FilterExpression:          expr.Filter(),
                 ProjectionExpression:      expr.Projection(),
                 TableName:                 aws.String(table),
         }
 
-        //Complete a scan of the table with the params from above
-        result, err := svc.Scan(params)
+        //Complete a query of the table with the params from above
+        result, err := svc.Query(params)
         if err != nil {
                 fmt.Println(err)
         }
+        //Initilise the slice of LocRecord
+        recs := []models.ProductRecord{}
 
-        recs := []models.LocRecord{}
-
+        //UnMarshal the DynamoDB results into a LocRecord and store in recs 
         err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &recs)
         if err != nil {
                 panic(fmt.Sprintf("failed to unmarshal Dynamodb Scan Items, %v", err))
         }
 
         //Marshal the records into JSON
-        queryJson, err = json.Marshal(recs[0])
+        queryJson, err = json.Marshal(recs)
         if err != nil {
                 panic(fmt.Sprintf("failed to marshal records, %v", err))
         }
         log.Printf("records %+v", recs[0])
         return
 
-}*/
+}

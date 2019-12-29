@@ -8,7 +8,7 @@ import (
     "github.com/auth0/go-jwt-middleware"
 	"github.com/dgrijalva/jwt-go"
 )
-
+//All of this was lifted from Auth0.
 type Response struct {
 	Message string `json:"message"`
 }
@@ -59,6 +59,7 @@ func getPemCert(token *jwt.Token) (string, error) {
 	return cert, nil
 }
 
+//Wrapped the Auth0 middleware code into a function so I can call it from my routes.
 func verifyToken() (*jwtmiddleware.JWTMiddleware) {
 	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options {
         ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
