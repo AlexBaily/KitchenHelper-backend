@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com\alexbaily\api\routes"
+	"github.com/alexbaily/KitchenHelper-backend/api"
 )
 
 func main() {
