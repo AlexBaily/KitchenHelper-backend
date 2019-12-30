@@ -70,8 +70,12 @@ func queryLocations(UserID string, table string)(queryJson []byte) {
 
         for i := range(recs) {
                 locationEnd := strings.Index(recs[i].ProductIdentifier, "#")
-                fmt.Printf("%v %v", recs[i], locationEnd)
-                locationsMap[recs[i].ProductIdentifier[0:locationEnd]] = struct{}{}
+                if locationEnd > 0 {
+                        fmt.Printf("%v %v", recs[i], locationEnd)
+                        locationsMap[recs[i].ProductIdentifier[0:locationEnd]] = struct{}{}
+                } else {
+                        locationsMap[recs[i].ProductIdentifier] = struct{}{}
+                }
         }
 
         //Convert the map to a slice so we can convert to a json object.
