@@ -1,9 +1,19 @@
 package main
 
 import (
+	"os"
+
 	"github.com/alexbaily/KitchenHelper-backend/api"
 )
 
+var (
+	runInLambda string = os.Getenv("LAMBDA")
+)
+
 func main() {
-	api.InitServer()
+	if runInLambda == "lambda" {
+		api.InitLambda()
+	} else {
+		api.InitServer()
+	}
 }
