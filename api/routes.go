@@ -2,8 +2,8 @@ package api
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/codegangsta/negroni"
-) 
+	"github.com/urfave/negroni"
+)
 
 //Setup the routes and middlware
 func setRoutes() (n *negroni.Negroni) {
@@ -26,8 +26,6 @@ func setRoutes() (n *negroni.Negroni) {
 	n = negroni.New()
 	n.Use(negroni.HandlerFunc(tokenMiddleware.HandlerWithNext))
 	n.UseHandler(router)
-	
+
 	return n
-
-
 }
