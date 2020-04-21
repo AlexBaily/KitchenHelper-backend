@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/alexbaily/KitchenHelper-backend/models"
+
 	"github.com/google/uuid"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -42,7 +43,7 @@ func configureDynamoDB() {
 
 //Todo: Update so this returns an error instead of just printing out
 //  This will allow us to return a proper HTTP response code.
-func queryLocations(UserID string, table string) (queryJson []byte) {
+func (d DynamoInt) queryLocations(UserID string, table string) (queryJson []byte) {
 
 	//keyCondition and Projection are required for the expression builder.
 	keyCondition := expression.Key("UserID").Equal(expression.Value(UserID))
@@ -66,7 +67,7 @@ func queryLocations(UserID string, table string) (queryJson []byte) {
 	}
 
 	//Complete a query of the table with the params from above
-	result, err := DynaDB.Client.Query(params)
+	result, err := d.Client.Query(params)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -108,7 +109,7 @@ func queryLocations(UserID string, table string) (queryJson []byte) {
 	if err != nil {
 		panic(fmt.Sprintf("failed to marshal records, %v", err))
 	}
-	log.Printf("records %+v", recs[0])
+	log.Printf("records %+v", queryJson)
 	return
 
 }
