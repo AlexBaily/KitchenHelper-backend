@@ -21,12 +21,13 @@ func locationGetHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 	}
-	dataJson := queryLocations(uuid.(string), kitchenTable)
+	dataJson := DynaDB.queryLocations(uuid.(string), kitchenTable)
 	//Set response headers.
 	w.Header().Add("statusDescription", "200 OK")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(dataJson)
+	return
 }
 
 func locationPostHandler(w http.ResponseWriter, r *http.Request) {
@@ -51,11 +52,13 @@ func locationPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	addLocation(uuid.(string), kitchenTable, locName[0])
+	status := DynaDB.addLocation(uuid.(string), kitchenTable, locName[0])
 	//Set response headers.
-	w.Header().Add("statusDescription", "200 OK")
+	//Set the HTTP status header to the one that we got from the DB add.
+	w.Header().Add("statusDescription", http.StatusText(status))
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(status)
+	return
 }
 
 func productGetHandler(w http.ResponseWriter, r *http.Request) {
@@ -77,6 +80,7 @@ func productGetHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(dataJson)
+	return
 }
 
 func productPostHandler(w http.ResponseWriter, r *http.Request) {
@@ -117,6 +121,7 @@ func productPostHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("statusDescription", "200 OK")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	return
 }
 
 /*

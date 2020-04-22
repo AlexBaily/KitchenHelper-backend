@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"strings"
 	"time"
 
@@ -114,7 +115,7 @@ func (d DynamoInt) queryLocations(UserID string, table string) (queryJson []byte
 
 }
 
-func addLocation(UserID string, table string, locName string) {
+func (d DynamoInt) addLocation(UserID string, table string, locName string) (status int) {
 	//Create the UpdateItemInput for updating the DynamoDB table.
 	input := &dynamodb.UpdateItemInput{
 		Key: map[string]*dynamodb.AttributeValue{
@@ -154,17 +155,21 @@ func addLocation(UserID string, table string, locName string) {
 				fmt.Println(dynamodb.ErrCodeRequestLimitExceeded, aerr.Error())
 			case dynamodb.ErrCodeInternalServerError:
 				fmt.Println(dynamodb.ErrCodeInternalServerError, aerr.Error())
+				status = 500
 			default:
 				fmt.Println(aerr.Error())
+				status = 500
 			}
 		} else {
 			// Print the error, cast err to awserr.Error to get the Code and
 			// Message from an error.
 			fmt.Println(err.Error())
 		}
-		return
+		return status
 	}
 	fmt.Println(result.ConsumedCapacity)
+	status = http.StatusOK
+	return
 }
 
 func queryProducts(UserID string, location string, table string) (queryJson []byte) {
