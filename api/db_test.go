@@ -11,11 +11,16 @@ import (
 
 type mockedDynamo struct {
 	dynamodbiface.DynamoDBAPI
-	Resp *dynamodb.QueryOutput
+	Resp    *dynamodb.QueryOutput
+	addResp *dynamodb.UpdateItemOutput
 }
 
 func (m mockedDynamo) Query(input *dynamodb.QueryInput) (*dynamodb.QueryOutput, error) {
 	return m.Resp, nil
+}
+
+func (m mockedDynamo) UpdateItem(input *dynamodb.UpdateItemInput) (*dynamodb.UpdateItemOutput, error) {
+	return m.addResp, nil
 }
 
 func TestQueryLocations(t *testing.T) {
@@ -52,6 +57,35 @@ func TestQueryLocations(t *testing.T) {
 			if a, e := rows, c.Expected[j]; a != e {
 				t.Errorf("%d, expected %v row, got %v", i, e, a)
 			}
+		}
+	}
+
+}
+
+func TestAddLocation(t *testing.T) {
+	cases := []struct {
+		addResp  *dynamodb.UpdateItemOutput
+		Expected int
+	}{
+		{
+			addResp: &dynamodb.UpdateItemOutput{
+				Attributes: map[string]*dynamodb.AttributeValue{
+					"Location": &dynamodb.AttributeValue{
+						S: aws.String("fridge"),
+					},
+				},
+			},
+			Expected: 200,
+		},
+	}
+
+	for i, c := range cases {
+		db := DynamoInt{
+			Client: mockedDynamo{addResp: c.addResp},
+		}
+		rows := db.addLocation("10000000", "pantry-table", "fridge")
+		if a, e := rows, c.Expected; a != e {
+			t.Fatalf("%d, expected status of %d, got %d", i, e, a)
 		}
 	}
 

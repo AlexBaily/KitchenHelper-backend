@@ -137,7 +137,7 @@ func (d DynamoInt) addLocation(UserID string, table string, locName string) (sta
 		TableName:        aws.String(table),
 		UpdateExpression: aws.String("SET #C = :c"),
 	}
-	result, err := DynaDB.Client.UpdateItem(input)
+	result, err := d.Client.UpdateItem(input)
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok {
 			switch aerr.Code() {
