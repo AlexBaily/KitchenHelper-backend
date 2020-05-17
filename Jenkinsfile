@@ -1,10 +1,14 @@
 pipeline {
     agent any
+
+    environment {
+        GOPATH = '${WORKSPACE}'
+    }
     stages {
         stage('Build') {
             steps {
                 script {
-                    withEnv(["GOPATH=${WORKSPACE}"])
+                    
                     sh 'go get -d -v ./...'
                     sh 'go install -v ./...'
                 }
