@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        GOPATH = '${WORKSPACE}'
+        GOPATH = ${WORKSPACE}
     }
     stages {
         stage('Build') {
