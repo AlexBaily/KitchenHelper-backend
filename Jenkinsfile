@@ -8,7 +8,8 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    
+                    sh 'mkdir -p $GOPATH/src/KitchenHelper-backend'
+                    sh 'ln -s $WORKSPACE $GOPATH/src/KitchenHelper-backend'
                     sh 'go get -d -v ./...'
                     sh 'go install -v ./...'
                 }
