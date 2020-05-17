@@ -9,7 +9,7 @@ pipeline {
             steps {
                 script {
                     sh 'mkdir -p $GOPATH/src/KitchenHelper-backend'
-                    sh 'ln -s $WORKSPACE $GOPATH/src/KitchenHelper-backend'
+                    sh 'ln -sf $WORKSPACE $GOPATH/src/KitchenHelper-backend'
                     sh 'go get -d -v ./...'
                     sh 'go install -v ./...'
                 }
