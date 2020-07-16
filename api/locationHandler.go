@@ -5,23 +5,15 @@ import (
 
 	"net/http"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 )
 
 func locationGetHandler(w http.ResponseWriter, r *http.Request) {
 
 	//retrieve the UserID variable
-	//Get the uuid passed from the authMiddleware context
-	user := r.Context().Value("user")
-	var uuid interface{}
-	for k, v := range user.(*jwt.Token).Claims.(jwt.MapClaims) {
-		if k == "sub" {
-			uuid = v
-		}
+	uuid := getUserID(r.Context().Value("user"))
 
-	}
-	dataJson := DynaDB.queryLocations(uuid.(string), kitchenTable)
+	dataJson := DynaDB.queryLocations(uuid, kitchenTable)
 	//Set response headers.
 	w.Header().Add("statusDescription", "200 OK")
 	w.Header().Set("Content-Type", "application/json")
@@ -31,15 +23,8 @@ func locationGetHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func locationPostHandler(w http.ResponseWriter, r *http.Request) {
-	//retrieve the UserID variable
-	//Get the uuid passed from the authMiddleware context
-	user := r.Context().Value("user")
-	var uuid interface{}
-	for k, v := range user.(*jwt.Token).Claims.(jwt.MapClaims) {
-		if k == "sub" {
-			uuid = v
-		}
-	}
+
+	uuid := getUserID(r.Context().Value("user"))
 
 	locName, ok := r.URL.Query()["location_name"]
 
@@ -52,7 +37,7 @@ func locationPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	status := DynaDB.addLocation(uuid.(string), kitchenTable, locName[0])
+	status := DynaDB.addLocation(uuid, kitchenTable, locName[0])
 	//Set response headers.
 	//Set the HTTP status header to the one that we got from the DB add.
 	w.Header().Add("statusDescription", http.StatusText(status))
@@ -64,17 +49,10 @@ func locationPostHandler(w http.ResponseWriter, r *http.Request) {
 func productGetHandler(w http.ResponseWriter, r *http.Request) {
 
 	//retrieve the UserID variable
-	//Get the uuid passed from the authMiddleware context
-	user := r.Context().Value("user")
-	var uuid interface{}
-	for k, v := range user.(*jwt.Token).Claims.(jwt.MapClaims) {
-		if k == "sub" {
-			uuid = v
-		}
+	uuid := getUserID(r.Context().Value("user"))
 
-	}
 	location := mux.Vars(r)["location"]
-	dataJson := queryProducts(uuid.(string), location, kitchenTable)
+	dataJson := queryProducts(uuid, location, kitchenTable)
 	//Set response headers.
 	w.Header().Add("statusDescription", "200 OK")
 	w.Header().Set("Content-Type", "application/json")
@@ -85,14 +63,7 @@ func productGetHandler(w http.ResponseWriter, r *http.Request) {
 
 func productPostHandler(w http.ResponseWriter, r *http.Request) {
 	//retrieve the UserID variable
-	//Get the uuid passed from the authMiddleware context
-	user := r.Context().Value("user")
-	var uuid interface{}
-	for k, v := range user.(*jwt.Token).Claims.(jwt.MapClaims) {
-		if k == "sub" {
-			uuid = v
-		}
-	}
+	uuid := getUserID(r.Context().Value("user"))
 
 	location := mux.Vars(r)["location"]
 
@@ -116,7 +87,7 @@ func productPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	addProduct(uuid.(string), kitchenTable, location, productName[0], quantity[0])
+	addProduct(uuid, kitchenTable, location, productName[0], quantity[0])
 	//Set response headers.
 	w.Header().Add("statusDescription", "200 OK")
 	w.Header().Set("Content-Type", "application/json")
