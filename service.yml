@@ -1,0 +1,15 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: helper-backend
+spec:
+  type: NodePort
+  selector:
+    app: helper-backend
+  ports:
+  - protocol: TCP
+    #The first port is the one that is exposed to the K8s cluster internally
+    #The targetPort is the port that the application exposes. 
+    port: 80
+    targetPort: 8080
+    nodePort: 31704
