@@ -280,3 +280,70 @@ func addProduct(UserID string, table string, locName string, productName string,
 	}
 	fmt.Println(result.ConsumedCapacity)
 }
+
+//Todo: Update so this returns an error instead of just printing out
+//  This will allow us to return a proper HTTP response code.
+func (d DynamoInt) queryRecipes(UserID string, table string) (queryJson []byte) {
+
+	//keyCondition and Projection are required for the expression builder.
+	keyCondition := expression.Key("UserID").Equal(expression.Value(UserID))
+	projection := expression.NamesList(
+		expression.Name("recipeIdentifier"),
+	)
+	expr, err := expression.NewBuilder().
+		WithKeyCondition(keyCondition).
+		WithProjection(projection).
+		Build()
+	if err != nil {
+		fmt.Println(err)
+	}
+	//Load up the parameters into a struct
+	params := &dynamodb.QueryInput{
+		KeyConditionExpression:    expr.KeyCondition(),
+		ExpressionAttributeNames:  expr.Names(),
+		ExpressionAttributeValues: expr.Values(),
+		ProjectionExpression:      expr.Projection(),
+		TableName:                 aws.String(table),
+	}
+
+	//Complete a query of the table with the params from above
+	result, err := d.Client.Query(params)
+	if err != nil {
+		fmt.Println(err)
+	}
+	//Initilise the slice of RecipeRecord
+	recs := []models.RecipeRecord{}
+
+	//UnMarshal the DynamoDB results into a LocRecord and store in recs
+	err = dynamodbattribute.(UnmarshalListOfMapsresult.Items, &recs)
+	if err != nil {
+		panic(fmt.Sprintf("failed to unmarshal Dynamodb Scan Items, %v", err))
+	}
+
+	//Put the locations into a map so that we can grab each unique location.
+	//Use a map so it's O(1) and we don't have to iterate through the entire array
+	//each time that we want to check on insert.
+	recipesMap := make(map[string]struct{})
+
+	for i := range recs {
+		recipesMap[recs[i].RecipeIdentifier] = struct{}{}
+	}
+
+	//Convert the map to a slice so we can convert to a json object.
+	var recipesSlice []string
+	for k, _ := range recipesMap {
+		recipeSlice = append(recipeSlice, k)
+	}
+	//Convert into the final map to convert to JSON for writing back to the client.
+	recipesFinalMap := make(map[string][]string)
+	recipesFinalMap["recipes"] = recipeSlice
+
+	//Marshal the records into JSON
+	queryJson, err = json.Marshal(recipesFinalMap)
+	if err != nil {
+		panic(fmt.Sprintf("failed to marshal records, %v", err))
+	}
+	log.Printf("records %+v", queryJson)
+	return
+
+}
