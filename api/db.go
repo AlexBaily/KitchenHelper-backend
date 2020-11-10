@@ -315,7 +315,7 @@ func (d DynamoInt) queryRecipes(UserID string, table string) (queryJson []byte) 
 	recs := []models.RecipeRecord{}
 
 	//UnMarshal the DynamoDB results into a LocRecord and store in recs
-	err = dynamodbattribute.(UnmarshalListOfMapsresult.Items, &recs)
+	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &recs)
 	if err != nil {
 		panic(fmt.Sprintf("failed to unmarshal Dynamodb Scan Items, %v", err))
 	}
@@ -332,11 +332,11 @@ func (d DynamoInt) queryRecipes(UserID string, table string) (queryJson []byte) 
 	//Convert the map to a slice so we can convert to a json object.
 	var recipesSlice []string
 	for k, _ := range recipesMap {
-		recipeSlice = append(recipeSlice, k)
+		recipesSlice = append(recipesSlice, k)
 	}
 	//Convert into the final map to convert to JSON for writing back to the client.
 	recipesFinalMap := make(map[string][]string)
-	recipesFinalMap["recipes"] = recipeSlice
+	recipesFinalMap["recipes"] = recipesSlice
 
 	//Marshal the records into JSON
 	queryJson, err = json.Marshal(recipesFinalMap)
