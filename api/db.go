@@ -42,6 +42,10 @@ func configureDynamoDB() {
 	DynaDB.Client = dynamodbiface.DynamoDBAPI(svc)
 }
 
+func init() {
+	configureDynamoDB()
+}
+
 //Todo: Update so this returns an error instead of just printing out
 //  This will allow us to return a proper HTTP response code.
 func (d DynamoInt) queryLocations(UserID string, table string) (queryJson []byte) {
