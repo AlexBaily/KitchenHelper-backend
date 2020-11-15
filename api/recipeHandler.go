@@ -18,7 +18,7 @@ func recipeGetHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 	}
-	dataJson := DynaDB.queryLocations(uuid.(string), kitchenTable)
+	dataJson := DynaDB.queryRecipes(uuid.(string), recipeTable)
 	//Set response headers.
 	w.Header().Add("statusDescription", "200 OK")
 	w.Header().Set("Content-Type", "application/json")

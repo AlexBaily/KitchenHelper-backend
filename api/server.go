@@ -13,6 +13,7 @@ var (
 	kitchenTable   string = os.Getenv("KITCHTABLE")
 	tokenVerifyURL string = os.Getenv("TOKENURL")
 	AUTH_AUDIENCE  string = os.Getenv("AUTH_AUDIENCE")
+	recipeTable    string = os.Getenv("RECIPETABLE")
 )
 
 //InitServer gets and sets the routes for the http server before
