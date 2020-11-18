@@ -293,7 +293,6 @@ func (d DynamoInt) queryRecipes(UserID string, table string) (queryJson []byte) 
 	keyCondition := expression.Key("UserID").Equal(expression.Value(UserID))
 	projection := expression.NamesList(
 		expression.Name("recipeIdentifier"),
-		expression.Name("photoURL"),
 	)
 	expr, err := expression.NewBuilder().
 		WithKeyCondition(keyCondition).
@@ -349,6 +348,55 @@ func (d DynamoInt) queryRecipes(UserID string, table string) (queryJson []byte) 
 		panic(fmt.Sprintf("failed to marshal records, %v", err))
 	}
 	log.Printf("records %+v", queryJson)
+	return
+
+}
+
+func queryRecipe(UserID string, recipe string, table string) (queryJson []byte) {
+	//keyCondition and Projection are required for the expression builder.
+	userIDCondition := expression.Key("UserID").Equal(expression.Value(UserID))
+	recipeCondition := expression.Key("RecipeIdentifier").BeginsWith("RecipeIdentifier")
+	projection := expression.NamesList(
+		expression.Name("RecipeIdentifier"),
+		expression.Name("PhotoURL"),
+		expression.Name("Quantity"),
+	)
+	expr, err := expression.NewBuilder().
+		WithKeyCondition(userIDCondition.And(recipeCondition)).
+		WithProjection(projection).
+		Build()
+	if err != nil {
+		fmt.Println(err)
+	}
+	//Load up the parameters into a struct
+	params := &dynamodb.QueryInput{
+		KeyConditionExpression:    expr.KeyCondition(),
+		ExpressionAttributeNames:  expr.Names(),
+		ExpressionAttributeValues: expr.Values(),
+		ProjectionExpression:      expr.Projection(),
+		TableName:                 aws.String(table),
+	}
+
+	//Complete a query of the table with the params from above
+	result, err := DynaDB.Client.Query(params)
+	if err != nil {
+		fmt.Println(err)
+	}
+	//Initilise the slice of LocRecord
+	recs := []models.ProductRecord{}
+
+	//UnMarshal the DynamoDB results into a LocRecord and store in recs
+	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &recs)
+	if err != nil {
+		panic(fmt.Sprintf("failed to unmarshal Dynamodb Scan Items, %v", err))
+	}
+
+	//Marshal the records into JSON
+	queryJson, err = json.Marshal(recs)
+	if err != nil {
+		panic(fmt.Sprintf("failed to marshal records, %v", err))
+	}
+	log.Printf("records %+v", recs[0])
 	return
 
 }
