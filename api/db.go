@@ -352,7 +352,7 @@ func (d DynamoInt) queryRecipes(UserID string, table string) (queryJson []byte) 
 
 }
 
-func queryRecipe(UserID string, recipe string, table string) (queryJson []byte) {
+func (d DynamoInt) queryRecipe(UserID string, recipe string, table string) (queryJson []byte) {
 	//keyCondition and Projection are required for the expression builder.
 	userIDCondition := expression.Key("UserID").Equal(expression.Value(UserID))
 	recipeCondition := expression.Key("RecipeIdentifier").BeginsWith("RecipeIdentifier")
