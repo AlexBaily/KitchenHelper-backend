@@ -126,3 +126,45 @@ func TestQueryRecipes(t *testing.T) {
 	}
 
 }
+
+func TestQueryRecipe(t *testing.T) {
+	cases := []struct {
+		Resp     *dynamodb.QueryOutput
+		Expected []byte
+	}{
+		{
+			Resp: &dynamodb.QueryOutput{
+				Items: []map[string]*dynamodb.AttributeValue{
+					{
+						"RecipeIdentifier": &dynamodb.AttributeValue{
+							S: aws.String("bean burritos"),
+						},
+						"PhotoURL": &dynamodb.AttributeValue{
+							S: aws.String("http://here-is-a-photo-s3.aws.photo"),
+						},
+						"Quantity": &dynamodb.AttributeValue{
+							N: aws.String("5"),
+						},
+					},
+				},
+			},
+			Expected: []byte("{\"bean burritos\", \"http://here-is-a-photo-s3.aws.photo\", 5}"),
+		},
+	}
+
+	for i, c := range cases {
+		db := DynamoInt{
+			Client: mockedDynamo{Resp: c.Resp},
+		}
+		rows := db.queryRecipe("testuserid", "bean burritos", "recipestable")
+		if a, e := rows, c.Expected; bytes.Compare(a, e) != 0 {
+			t.Fatalf("%d, expected %d row, got %d", i, e, a)
+		}
+		for j, rows := range rows {
+			if a, e := rows, c.Expected[j]; a != e {
+				t.Errorf("%d, expected %v row, got %v", i, e, a)
+			}
+		}
+	}
+
+}

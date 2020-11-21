@@ -382,10 +382,10 @@ func queryRecipe(UserID string, recipe string, table string) (queryJson []byte) 
 	if err != nil {
 		fmt.Println(err)
 	}
-	//Initilise the slice of LocRecord
-	recs := []models.ProductRecord{}
+	//Initilise the slice of RecipeRecord
+	recs := []models.RecipeRecord{}
 
-	//UnMarshal the DynamoDB results into a LocRecord and store in recs
+	//UnMarshal the DynamoDB results into a RecipeRecord and store in recs
 	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &recs)
 	if err != nil {
 		panic(fmt.Sprintf("failed to unmarshal Dynamodb Scan Items, %v", err))
