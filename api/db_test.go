@@ -156,7 +156,7 @@ func TestQueryRecipe(t *testing.T) {
 		db := DynamoInt{
 			Client: mockedDynamo{Resp: c.Resp},
 		}
-		rows := db.queryRecipe("testuserid", "bean burritos", "recipestable")
+		rows := db.queryRecipe("testuserid", "bean", "recipestable")
 		if a, e := rows, c.Expected; bytes.Compare(a, e) != 0 {
 			t.Fatalf("%d, expected %d row, got %d", i, e, a)
 		}
