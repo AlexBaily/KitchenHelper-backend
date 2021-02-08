@@ -6,6 +6,8 @@ type RecipeRecord struct {
 	RecipeIdentifier string
 	RecipeName       string
 	PhotoURL         string
+	Description      string
+	Sharing          string
 	Steps            []string
 	Ingredients      []string
 }
