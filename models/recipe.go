@@ -2,12 +2,12 @@ package models
 
 //Record struct that will house the DynamoDB records.
 type RecipeRecord struct {
-	UserID           string
-	RecipeIdentifier string
-	RecipeName       string
-	PhotoURL         string
-	Description      string
-	Sharing          string
-	Steps            []string
-	Ingredients      []string
+	UserID           string        `json:"userID"`
+	RecipeIdentifier string        `json:"recipeIdentifier"`
+	RecipeName       string        `json:"recipeName"`
+	PhotoURL         string        `json:"photoURL"`
+	Description      string        `json:"description"`
+	Sharing          string        `json:"sharing"`
+	Steps            []interface{} `json:"steps"`
+	Ingredients      []interface{} `json:"ingredients"`
 }
