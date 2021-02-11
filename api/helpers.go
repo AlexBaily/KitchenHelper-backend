@@ -27,7 +27,6 @@ func recipeFromJson(jsonRecipe []byte) models.RecipeRecord {
 	var record models.RecipeRecord
 	if err := json.Unmarshal(jsonRecipe, &record); err != nil {
 		fmt.Println(err)
-		return nil
 	}
 
 	return record
