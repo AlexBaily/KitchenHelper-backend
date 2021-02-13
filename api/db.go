@@ -356,7 +356,7 @@ func (d DynamoInt) queryRecipes(UserID string, table string) (queryJson []byte) 
 func (d DynamoInt) queryRecipe(UserID string, recipe string, table string) (queryJson []byte) {
 	//keyCondition and Projection are required for the expression builder.
 	userIDCondition := expression.Key("UserID").Equal(expression.Value(UserID))
-	recipeCondition := expression.Key("RecipeIdentifier").BeginsWith(recipe)
+	recipeCondition := expression.Key("recipeIdentifier").BeginsWith(recipe)
 	projection := expression.ProjectionBuilder{}
 
 	value := reflect.Indirect(reflect.ValueOf(&models.RecipeRecord{}))
@@ -405,7 +405,6 @@ func (d DynamoInt) queryRecipe(UserID string, recipe string, table string) (quer
 
 }
 
-/*
 func addRecipe(UserID string, table string) {
 	//Generate a new UUID
 	prodUUID := uuid.New()
@@ -465,4 +464,3 @@ func addRecipe(UserID string, table string) {
 	}
 	fmt.Println(result.ConsumedCapacity)
 }
-*/

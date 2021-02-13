@@ -74,7 +74,7 @@ func recipePostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	addRecipe(uuid, recipeJson)
+	//addRecipe(uuid, recipeJson)
 	//Set response headers.
 	w.Header().Add("statusDescription", "200 OK")
 	w.Header().Set("Content-Type", "application/json")
