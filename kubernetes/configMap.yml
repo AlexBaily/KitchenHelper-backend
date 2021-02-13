@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: helper-backend-config
+data:
+  KITCHTABLE: ${KITCHTABLE}
+  AUTH_AUDIENCE: ${AUTH_AUDIENCE}
+  TOKENURL: ${TOKENURL}
+  AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
+  RECIPETABLE: ${RECIPETABLE}
