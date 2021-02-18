@@ -1,10 +1,12 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 
+	"github.com/alexbaily/KitchenHelper-backend/models"
 	"github.com/gorilla/mux"
 )
 
@@ -74,7 +76,9 @@ func recipePostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//addRecipe(uuid, recipeJson)
+	recipeRecord := json.Unmarshal(recipeJson, &models.RecipeRecord{})
+
+	//addRecipe(uuid, recipeRecord, recipeJson)
 	//Set response headers.
 	w.Header().Add("statusDescription", "200 OK")
 	w.Header().Set("Content-Type", "application/json")
