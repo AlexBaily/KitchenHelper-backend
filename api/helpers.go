@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/alexbaily/KitchenHelper-backend/models"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/form3tech-oss/jwt-go"
 )
 
 func getUserID(user interface{}) string {
