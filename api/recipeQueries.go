@@ -29,6 +29,7 @@ func (d DynamoInt) queryRecipes(UserID string, recipe string, table string) (que
 		projection = projection.AddNames(expression.Name(value.Type().Field(i).Name))
 	}
 
+	//If recipe is empty then return all of the recipes for the user.
 	if recipe == "" {
 		expr, err := expression.NewBuilder().
 			WithKeyCondition(userIDCondition).
@@ -81,9 +82,7 @@ func (d DynamoInt) queryRecipes(UserID string, recipe string, table string) (que
 
 }
 
-func addRecipe(UserID string, table string) {
-	//Generate a new UUID
-	recUUID := uuid.New()
+func addRecipe(UserID string, recipe RecipeRecord,table string) {
 
 	//Create the UpdateItemInput for updating the DynamoDB table.
 	input := &dynamodb.UpdateItemInput{
@@ -92,23 +91,23 @@ func addRecipe(UserID string, table string) {
 				S: aws.String(UserID),
 			},
 			"recipeIdentifier": {
-				S: aws.String(locName + "#" + recUUID.String()),
+				S: aws.String(recipe.RecipeIdentifier),
 			},
 		},
 		ExpressionAttributeNames: map[string]*string{
-			"#PN": aws.String("ProductName"),
-			"#Q":  aws.String("Quantity"),
+			"#RN": aws.String("RecipeName"),
+			"#D":  aws.String("Description"),
 		},
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
-			":pn": {
-				S: aws.String(productName),
+			":rn": {
+				S: aws.String(recipe.RecipeName),
 			},
-			":q": {
-				N: aws.String(quantity),
+			":d": {
+				N: aws.String(recipe.Description),
 			},
 		},
 		TableName:        aws.String(table),
-		UpdateExpression: aws.String("SET #PN = :pn, #Q = :q"),
+		UpdateExpression: aws.String("SET #RN = :rn, #D = :d"),
 	}
 	result, err := DynaDB.Client.UpdateItem(input)
 	if err != nil {
