@@ -29,7 +29,7 @@ func (d DynamoInt) queryRecipes(UserID string, recipe string, table string) (que
 		projection = projection.AddNames(expression.Name(value.Type().Field(i).Name))
 	}
 
-	if recipe == "all" {
+	if recipe == "" {
 		expr, err := expression.NewBuilder().
 			WithKeyCondition(userIDCondition).
 			WithProjection(projection).
