@@ -51,7 +51,7 @@ func recipeGetHandler(w http.ResponseWriter, r *http.Request) {
 */
 func recipePostHandler(w http.ResponseWriter, r *http.Request) {
 	//retrieve the UserID variable
-	uuid := getUserID(r.Context().Value("user"))
+	//uuid := getUserID(r.Context().Value("user"))
 
 	recipeJson, err := ioutil.ReadAll(r.Body)
 	//If we can't find the correct parameter then return a status 400.

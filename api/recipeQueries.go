@@ -28,9 +28,10 @@ func (d DynamoInt) queryRecipes(UserID string, recipe string, table string) (que
 	}
 
 	var expr expression.Expression
+	var err error
 	//If recipe is empty then return all of the recipes for the user.
 	if recipe == "" {
-		expr, err := expression.NewBuilder().
+		expr, err = expression.NewBuilder().
 			WithKeyCondition(userIDCondition).
 			WithProjection(projection).
 			Build()
@@ -39,7 +40,7 @@ func (d DynamoInt) queryRecipes(UserID string, recipe string, table string) (que
 		}
 	} else {
 		recipeCondition := expression.Key("recipeIdentifier").BeginsWith(recipe)
-		expr, err := expression.NewBuilder().
+		expr, err = expression.NewBuilder().
 			WithKeyCondition(userIDCondition.And(recipeCondition)).
 			WithProjection(projection).
 			Build()
