@@ -8,8 +8,6 @@ import (
 
 	"github.com/alexbaily/KitchenHelper-backend/models"
 
-	"github.com/google/uuid"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
@@ -29,6 +27,7 @@ func (d DynamoInt) queryRecipes(UserID string, recipe string, table string) (que
 		projection = projection.AddNames(expression.Name(value.Type().Field(i).Name))
 	}
 
+	var expr expression.Expression
 	//If recipe is empty then return all of the recipes for the user.
 	if recipe == "" {
 		expr, err := expression.NewBuilder().
@@ -82,7 +81,7 @@ func (d DynamoInt) queryRecipes(UserID string, recipe string, table string) (que
 
 }
 
-func addRecipe(UserID string, recipe &models.RecipeRecord,table string) {
+func addRecipe(UserID string, recipe models.RecipeRecord, table string) {
 
 	//Create the UpdateItemInput for updating the DynamoDB table.
 	input := &dynamodb.UpdateItemInput{

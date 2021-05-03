@@ -20,9 +20,9 @@ func setRoutes() (n *negroni.Negroni) {
 		Methods("GET")
 	router.HandleFunc("/locations/{location}", productPostHandler).
 		Methods("POST")
-	router.HandleFunc("/recipes", recipesGetHandler).
+	router.HandleFunc("/recipes", recipeGetHandler).
 		Methods("GET")
-	router.HandleFunc("/recipes/{recipe}", recipesGetHandler).
+	router.HandleFunc("/recipes/{recipe}", recipeGetHandler).
 		Methods("GET")
 	router.HandleFunc("/recipes/{recipe}", recipePostHandler).
 		Methods("POST")
