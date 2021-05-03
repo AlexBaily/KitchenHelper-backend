@@ -82,7 +82,7 @@ func (d DynamoInt) queryRecipes(UserID string, recipe string, table string) (que
 
 }
 
-func addRecipe(UserID string, recipe RecipeRecord,table string) {
+func addRecipe(UserID string, recipe &models.RecipeRecord,table string) {
 
 	//Create the UpdateItemInput for updating the DynamoDB table.
 	input := &dynamodb.UpdateItemInput{
