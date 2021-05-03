@@ -4,10 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"net/http"
 	"reflect"
-	"strings"
-	"time"
 
 	"github.com/alexbaily/KitchenHelper-backend/models"
 
@@ -15,18 +12,15 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
 	"github.com/aws/aws-sdk-go/service/dynamodb/expression"
 )
 
-
 func (d DynamoInt) queryRecipes(UserID string, recipe string, table string) (queryJson []byte) {
+
 	//keyCondition and Projection are required for the expression builder.
 	userIDCondition := expression.Key("UserID").Equal(expression.Value(UserID))
-	recipeCondition := expression.Key("recipeIdentifier").BeginsWith(recipe)
 	projection := expression.ProjectionBuilder{}
 
 	value := reflect.Indirect(reflect.ValueOf(&models.RecipeRecord{}))
@@ -35,13 +29,25 @@ func (d DynamoInt) queryRecipes(UserID string, recipe string, table string) (que
 		projection = projection.AddNames(expression.Name(value.Type().Field(i).Name))
 	}
 
-	expr, err := expression.NewBuilder().
-		WithKeyCondition(userIDCondition.And(recipeCondition)).
-		WithProjection(projection).
-		Build()
-	if err != nil {
-		fmt.Println(err)
+	if recipe == "all" {
+		expr, err := expression.NewBuilder().
+			WithKeyCondition(userIDCondition).
+			WithProjection(projection).
+			Build()
+		if err != nil {
+			fmt.Println(err)
+		}
+	} else {
+		recipeCondition := expression.Key("recipeIdentifier").BeginsWith(recipe)
+		expr, err := expression.NewBuilder().
+			WithKeyCondition(userIDCondition.And(recipeCondition)).
+			WithProjection(projection).
+			Build()
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
+
 	//Load up the parameters into a struct
 	params := &dynamodb.QueryInput{
 		KeyConditionExpression:    expr.KeyCondition(),
@@ -75,7 +81,7 @@ func (d DynamoInt) queryRecipes(UserID string, recipe string, table string) (que
 
 }
 
-func addRecipe(UserID string,  ,table string) {
+func addRecipe(UserID string, table string) {
 	//Generate a new UUID
 	recUUID := uuid.New()
 
