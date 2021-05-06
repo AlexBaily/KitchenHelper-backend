@@ -9,4 +9,4 @@ RUN apk add --no-cache git mercurial \
     && apk del git mercurial
 
 
-CMD ["app"]
+CMD ["KitchenHelper-backend"]
