@@ -64,7 +64,7 @@ func recipePostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	recipeRecord := json.Unmarshal(recipeJson, &models.RecipeRecord{})
-	fmt.Println("%v", recipeRecord)
+	fmt.Printf("%v", recipeRecord)
 
 	//addRecipe(uuid, recipeRecord, recipeJson)
 	//Set response headers.
