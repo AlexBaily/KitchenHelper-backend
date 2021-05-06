@@ -9,4 +9,7 @@ spec:
       - name: helper-backend
         image: kitchenhelper-backend
         command: ['app']
+        envFrom:
+          - configMapRef:
+            name: helper-backend-config
       restartPolicy: OnFailure
