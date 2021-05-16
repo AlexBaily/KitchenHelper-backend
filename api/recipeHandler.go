@@ -51,7 +51,7 @@ func recipeGetHandler(w http.ResponseWriter, r *http.Request) {
 */
 func recipePostHandler(w http.ResponseWriter, r *http.Request) {
 	//retrieve the UserID variable
-	//uuid := getUserID(r.Context().Value("user"))
+	uuid := getUserID(r.Context().Value("user"))
 
 	recipeJson, err := ioutil.ReadAll(r.Body)
 	//If we can't find the correct parameter then return a status 400.
@@ -63,10 +63,14 @@ func recipePostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	recipeRecord := json.Unmarshal(recipeJson, &models.RecipeRecord{})
-	fmt.Printf("%v", recipeRecord)
+	recipe := models.RecipeRecord{}
+	err = json.Unmarshal(recipeJson, &recipe)
+	if err != nil {
+		panic(fmt.Sprintf("failed to unmarshal Dynamodb Scan Items, %v", err))
+	}
+	fmt.Printf("%v", recipe)
 
-	//addRecipe(uuid, recipeRecord, recipeJson)
+	addRecipe(uuid, recipe, recipeTable)
 	//Set response headers.
 	w.Header().Add("statusDescription", "200 OK")
 	w.Header().Set("Content-Type", "application/json")

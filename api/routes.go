@@ -24,7 +24,7 @@ func setRoutes() (n *negroni.Negroni) {
 		Methods("GET")
 	router.HandleFunc("/recipes/{recipe}", recipeGetHandler).
 		Methods("GET")
-	router.HandleFunc("/recipes/{recipe}", recipePostHandler).
+	router.HandleFunc("/recipes", recipePostHandler).
 		Methods("POST")
 	//Set the jwt handler which will verify the token.
 	//Let negroni handle this.

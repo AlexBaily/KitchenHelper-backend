@@ -8,6 +8,8 @@ import (
 
 	"github.com/alexbaily/KitchenHelper-backend/models"
 
+	"github.com/google/uuid"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
@@ -83,7 +85,9 @@ func (d DynamoInt) queryRecipes(UserID string, recipe string, table string) (que
 }
 
 func addRecipe(UserID string, recipe models.RecipeRecord, table string) {
-
+	
+	//Generate a new UUID
+	recipeUUID := uuid.New()
 	//Create the UpdateItemInput for updating the DynamoDB table.
 	input := &dynamodb.UpdateItemInput{
 		Key: map[string]*dynamodb.AttributeValue{
@@ -91,7 +95,7 @@ func addRecipe(UserID string, recipe models.RecipeRecord, table string) {
 				S: aws.String(UserID),
 			},
 			"recipeIdentifier": {
-				S: aws.String(recipe.RecipeIdentifier),
+				S: aws.String(recipeUUID.String()),
 			},
 		},
 		ExpressionAttributeNames: map[string]*string{
@@ -103,7 +107,7 @@ func addRecipe(UserID string, recipe models.RecipeRecord, table string) {
 				S: aws.String(recipe.RecipeName),
 			},
 			":d": {
-				N: aws.String(recipe.Description),
+				S: aws.String(recipe.Description),
 			},
 		},
 		TableName:        aws.String(table),
