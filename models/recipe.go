@@ -8,6 +8,6 @@ type RecipeRecord struct {
 	PhotoURL         string              `json:"photoURL"`
 	Description      string              `json:"description"`
 	Sharing          string              `json:"sharing"`
-	Steps            []map[string]string `json:"steps"`
-	Ingredients      []map[string]string `json:"ingredients"`
+	Steps            []map[string]interface{} `json:"steps"`
+	Ingredients      []map[string]interface{} `json:"ingredients"`
 }

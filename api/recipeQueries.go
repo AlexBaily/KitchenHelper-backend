@@ -68,6 +68,20 @@ func (d DynamoInt) queryRecipes(UserID string, recipe string, table string) (que
 	//Initilise the slice of RecipeRecord
 	recs := []models.RecipeRecord{}
 
+	//Iterate over the items so that we can unmarshal them
+	for _, i := range result.Items {
+		rec := models.RecipeRecord{}
+
+		err = dynamodbattribute.UnmarshalMap(i, &rec)
+		fmt.Println(i)
+
+		if err != nil {
+            panic(fmt.Sprintf("Got error unmarshalling: %v", err))
+        }
+
+		recs = append(recs, rec)
+	}
+
 	//UnMarshal the DynamoDB results into a RecipeRecord and store in recs
 	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &recs)
 	if err != nil {
@@ -88,6 +102,17 @@ func addRecipe(UserID string, recipe models.RecipeRecord, table string) {
 	
 	//Generate a new UUID
 	recipeUUID := uuid.New()
+
+	//Convert the steps to a list of maps
+	lMap, err := dynamodbattribute.MarshalList(recipe.Steps)
+	if err != nil {
+		panic(fmt.Sprintf("failed to DynamoDB marshal Record, %v", err))
+	}
+	//Convert the ingredients to a map[string]*dynamodb.AttributeValue
+	ingredients, err := dynamodbattribute.MarshalList(recipe.Ingredients)
+	if err != nil {
+		panic(fmt.Sprintf("failed to DynamoDB marshal Record, %v", err))
+	}
 	//Create the UpdateItemInput for updating the DynamoDB table.
 	input := &dynamodb.UpdateItemInput{
 		Key: map[string]*dynamodb.AttributeValue{
@@ -101,6 +126,8 @@ func addRecipe(UserID string, recipe models.RecipeRecord, table string) {
 		ExpressionAttributeNames: map[string]*string{
 			"#RN": aws.String("RecipeName"),
 			"#D":  aws.String("Description"),
+			"#S": aws.String("Steps"),
+			"#I": aws.String("Ingredients"),
 		},
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
 			":rn": {
@@ -109,9 +136,15 @@ func addRecipe(UserID string, recipe models.RecipeRecord, table string) {
 			":d": {
 				S: aws.String(recipe.Description),
 			},
+			":s": {
+				L: lMap,
+			},
+			":i": {
+				L: ingredients,
+			},
 		},
 		TableName:        aws.String(table),
-		UpdateExpression: aws.String("SET #RN = :rn, #D = :d"),
+		UpdateExpression: aws.String("SET #RN = :rn, #D = :d, #S = :s, #I = :i"),
 	}
 	result, err := DynaDB.Client.UpdateItem(input)
 	if err != nil {
