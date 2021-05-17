@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"reflect"
 
 	"github.com/alexbaily/KitchenHelper-backend/models"
@@ -17,7 +16,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb/expression"
 )
 
-func (d DynamoInt) queryRecipes(UserID string, recipe string, table string) (queryJson []byte) {
+func (d DynamoInt) queryRecipes(UserID string, recipe string, table string) (queryJson []byte, err error) {
 
 	//keyCondition and Projection are required for the expression builder.
 	userIDCondition := expression.Key("UserID").Equal(expression.Value(UserID))
@@ -30,7 +29,6 @@ func (d DynamoInt) queryRecipes(UserID string, recipe string, table string) (que
 	}
 
 	var expr expression.Expression
-	var err error
 	//If recipe is empty then return all of the recipes for the user.
 	if recipe == "" {
 		expr, err = expression.NewBuilder().
@@ -39,6 +37,7 @@ func (d DynamoInt) queryRecipes(UserID string, recipe string, table string) (que
 			Build()
 		if err != nil {
 			fmt.Println(err)
+			return nil, err
 		}
 	} else {
 		recipeCondition := expression.Key("recipeIdentifier").BeginsWith(recipe)
@@ -48,6 +47,7 @@ func (d DynamoInt) queryRecipes(UserID string, recipe string, table string) (que
 			Build()
 		if err != nil {
 			fmt.Println(err)
+			return nil, err
 		}
 	}
 
@@ -64,6 +64,7 @@ func (d DynamoInt) queryRecipes(UserID string, recipe string, table string) (que
 	result, err := DynaDB.Client.Query(params)
 	if err != nil {
 		fmt.Println(err)
+		return nil, err
 	}
 	//Initilise the slice of RecipeRecord
 	recs := []models.RecipeRecord{}
@@ -77,6 +78,7 @@ func (d DynamoInt) queryRecipes(UserID string, recipe string, table string) (que
 
 		if err != nil {
             panic(fmt.Sprintf("Got error unmarshalling: %v", err))
+			return nil, err
         }
 
 		recs = append(recs, rec)
@@ -86,19 +88,20 @@ func (d DynamoInt) queryRecipes(UserID string, recipe string, table string) (que
 	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &recs)
 	if err != nil {
 		panic(fmt.Sprintf("failed to unmarshal Dynamodb Scan Items, %v", err))
+		return nil, err
 	}
 
 	//Marshal the records into JSON
 	queryJson, err = json.Marshal(recs)
 	if err != nil {
 		panic(fmt.Sprintf("failed to marshal records, %v", err))
+		return nil, err
 	}
-	log.Printf("records %+v", recs)
-	return
+	return queryJson, err
 
 }
 
-func addRecipe(UserID string, recipe models.RecipeRecord, table string) {
+func addRecipe(UserID string, recipe models.RecipeRecord, table string) error {
 	
 	//Generate a new UUID
 	recipeUUID := uuid.New()
@@ -146,7 +149,7 @@ func addRecipe(UserID string, recipe models.RecipeRecord, table string) {
 		TableName:        aws.String(table),
 		UpdateExpression: aws.String("SET #RN = :rn, #D = :d, #S = :s, #I = :i"),
 	}
-	result, err := DynaDB.Client.UpdateItem(input)
+	_, err = DynaDB.Client.UpdateItem(input)
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok {
 			switch aerr.Code() {
@@ -172,7 +175,7 @@ func addRecipe(UserID string, recipe models.RecipeRecord, table string) {
 			// Message from an error.
 			fmt.Println(err.Error())
 		}
-		return
+		return err
 	}
-	fmt.Println(result.ConsumedCapacity)
+	return nil
 }

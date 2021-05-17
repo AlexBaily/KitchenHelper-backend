@@ -15,8 +15,16 @@ func recipeGetHandler(w http.ResponseWriter, r *http.Request) {
 	uuid := getUserID(r.Context().Value("user"))
 
 	recipe := mux.Vars(r)["recipe"]
+	
 
-	dataJson := DynaDB.queryRecipes(uuid, recipe, recipeTable)
+	dataJson, err := DynaDB.queryRecipes(uuid, recipe, recipeTable)
+	if err != nil {
+		panic(fmt.Sprintf("failed to get recipe, %v", err))
+		w.Header().Add("statusDescription", "500 Internal Server Error")
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("500 Internal Server Error"))
+		return
+	}
 	//Set response headers.
 	w.Header().Add("statusDescription", "200 OK")
 	w.Header().Set("Content-Type", "application/json")
@@ -67,10 +75,20 @@ func recipePostHandler(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(recipeJson, &recipe)
 	if err != nil {
 		panic(fmt.Sprintf("failed to unmarshal Dynamodb Scan Items, %v", err))
+		w.Header().Add("statusDescription", "500 Internal Server Error")
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("500 Internal Server Error"))
+		return
 	}
-	fmt.Printf("%v", recipe)
 
-	addRecipe(uuid, recipe, recipeTable)
+	err = addRecipe(uuid, recipe, recipeTable)
+	if err != nil {
+		panic(fmt.Sprintf("failed to add recipe, %v", err))
+		w.Header().Add("statusDescription", "500 Internal Server Error")
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("500 Internal Server Error"))
+		return
+	}
 	//Set response headers.
 	w.Header().Add("statusDescription", "200 OK")
 	w.Header().Set("Content-Type", "application/json")
