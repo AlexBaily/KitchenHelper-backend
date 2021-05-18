@@ -23,7 +23,7 @@ func TestQueryRecipes(t *testing.T) {
 					},
 				},
 			},
-			Expected: []byte("{\"recipes\":[\"bean burritos\"]}"),
+			Expected: []byte("[{\"userID\":\"\",\"recipeIdentifier\":\"bean burritos\",\"recipeName\":\"\",\"photoURL\":\"\",\"notes\":\"\",\"description\":\"\",\"sharing\":\"\",\"steps\":null,\"ingredients\":null}]"),
 		},
 	}
 
@@ -65,7 +65,7 @@ func TestQueryRecipe(t *testing.T) {
 					},
 				},
 			},
-			Expected: []byte("{\"bean burritos\", \"http://here-is-a-photo-s3.aws.photo\", \"Test\"}"),
+			Expected: []byte("[{\"userID\":\"\",\"recipeIdentifier\":\"bean burritos\",\"recipeName\":\"\",\"photoURL\":\"http://here-is-a-photo-s3.aws.photo\",\"notes\":\"\",\"description\":\"Test\",\"sharing\":\"\",\"steps\":null,\"ingredients\":null}]"),
 		},
 	}
 
