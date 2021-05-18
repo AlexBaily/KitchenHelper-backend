@@ -61,7 +61,7 @@ func (d DynamoInt) queryRecipes(UserID string, recipe string, table string) (que
 	}
 
 	//Complete a query of the table with the params from above
-	result, err := DynaDB.Client.Query(params)
+	result, err := d.Client.Query(params)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
@@ -101,7 +101,7 @@ func (d DynamoInt) queryRecipes(UserID string, recipe string, table string) (que
 
 }
 
-func addRecipe(UserID string, recipe models.RecipeRecord, table string) error {
+func (d DynamoInt) addRecipe(UserID string, recipe models.RecipeRecord, table string) error {
 	
 	//Generate a new UUID
 	recipeUUID := uuid.New()
@@ -162,7 +162,7 @@ func addRecipe(UserID string, recipe models.RecipeRecord, table string) error {
 		UpdateExpression: aws.String(
 			"SET #RN = :rn, #D = :d, #P = :p, #N = :n, #S = : s, #ST = :st, #I = :i"),
 	}
-	_, err = DynaDB.Client.UpdateItem(input)
+	_, err = d.Client.UpdateItem(input)
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok {
 			switch aerr.Code() {

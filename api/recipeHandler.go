@@ -81,7 +81,7 @@ func recipePostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = addRecipe(uuid, recipe, recipeTable)
+	err = DynaDB.addRecipe(uuid, recipe, recipeTable)
 	if err != nil {
 		panic(fmt.Sprintf("failed to add recipe, %v", err))
 		w.Header().Add("statusDescription", "500 Internal Server Error")
