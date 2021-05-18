@@ -160,7 +160,7 @@ func (d DynamoInt) addRecipe(UserID string, recipe models.RecipeRecord, table st
 		},
 		TableName:        aws.String(table),
 		UpdateExpression: aws.String(
-			"SET #RN = :rn, #D = :d, #P = :p, #N = :n, #S = : s, #ST = :st, #I = :i"),
+			"SET #RN = :rn, #D = :d, #P = :p, #N = :n, #S = :s, #ST = :st, #I = :i"),
 	}
 	_, err = d.Client.UpdateItem(input)
 	if err != nil {
