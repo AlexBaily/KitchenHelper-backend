@@ -6,6 +6,7 @@ type RecipeRecord struct {
 	RecipeIdentifier string              `json:"recipeIdentifier"`
 	RecipeName       string              `json:"recipeName"`
 	PhotoURL         string              `json:"photoURL"`
+	Notes			 string				 `json:"notes"`
 	Description      string              `json:"description"`
 	Sharing          string              `json:"sharing"`
 	Steps            []map[string]interface{} `json:"steps"`

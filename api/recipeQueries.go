@@ -129,7 +129,10 @@ func addRecipe(UserID string, recipe models.RecipeRecord, table string) error {
 		ExpressionAttributeNames: map[string]*string{
 			"#RN": aws.String("RecipeName"),
 			"#D":  aws.String("Description"),
-			"#S": aws.String("Steps"),
+			"#P": aws.String("PhotoURL"),
+			"#N":  aws.String("Notes"),
+			"#S":  aws.String("Sharing"),
+			"#ST": aws.String("Steps"),
 			"#I": aws.String("Ingredients"),
 		},
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
@@ -139,7 +142,16 @@ func addRecipe(UserID string, recipe models.RecipeRecord, table string) error {
 			":d": {
 				S: aws.String(recipe.Description),
 			},
+			":p": {
+				S: aws.String(recipe.PhotoURL),
+			},
+			":n": {
+				S: aws.String(recipe.Notes),
+			},
 			":s": {
+				S: aws.String(recipe.Sharing),
+			},
+			":st": {
 				L: lMap,
 			},
 			":i": {
@@ -147,7 +159,8 @@ func addRecipe(UserID string, recipe models.RecipeRecord, table string) error {
 			},
 		},
 		TableName:        aws.String(table),
-		UpdateExpression: aws.String("SET #RN = :rn, #D = :d, #S = :s, #I = :i"),
+		UpdateExpression: aws.String(
+			"SET #RN = :rn, #D = :d, #P = :p, #N = :n, #S = : s, #ST = :st, #I = :i"),
 	}
 	_, err = DynaDB.Client.UpdateItem(input)
 	if err != nil {
