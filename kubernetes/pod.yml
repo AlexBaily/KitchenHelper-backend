@@ -11,5 +11,5 @@ spec:
         command: ['app']
         envFrom:
           - configMapRef:
-            name: helper-backend-config
+              name: helper-backend-config
       restartPolicy: OnFailure

@@ -18,7 +18,7 @@ pipeline {
         stage('UnitTest') {
             steps {
                 script {
-                    sh 'go test'
+                    sh 'cd api && go test'
                 }
             }
         }
