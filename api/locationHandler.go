@@ -8,6 +8,9 @@ import (
 	"github.com/gorilla/mux"
 )
 
+/*
+HTTP handler for get requests on /location
+*/
 func locationGetHandler(w http.ResponseWriter, r *http.Request) {
 
 	//retrieve the UserID variable
@@ -22,6 +25,9 @@ func locationGetHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+/*
+HTTP handler for post requests on /location
+*/
 func locationPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	uuid := getUserID(r.Context().Value("user"))
@@ -46,6 +52,9 @@ func locationPostHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+/*
+HTTP handler for get requests on /location/product
+*/
 func productGetHandler(w http.ResponseWriter, r *http.Request) {
 
 	//retrieve the UserID variable
@@ -61,6 +70,9 @@ func productGetHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+/*
+HTTP handler for post requests on /location/product
+*/
 func productPostHandler(w http.ResponseWriter, r *http.Request) {
 	//retrieve the UserID variable
 	uuid := getUserID(r.Context().Value("user"))

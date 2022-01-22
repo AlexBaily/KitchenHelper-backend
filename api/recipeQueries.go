@@ -16,6 +16,9 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb/expression"
 )
 
+/*
+DynamoDB query for getting recipes from a user.
+*/
 func (d DynamoInt) queryRecipes(UserID string, recipe string, table string) (queryJson []byte, err error) {
 
 	//keyCondition and Projection are required for the expression builder.
@@ -101,6 +104,9 @@ func (d DynamoInt) queryRecipes(UserID string, recipe string, table string) (que
 
 }
 
+/*
+DynamoDB query for adding a recipes for a user.
+*/
 func (d DynamoInt) addRecipe(UserID string, recipe models.RecipeRecord, table string) error {
 	
 	//Generate a new UUID
