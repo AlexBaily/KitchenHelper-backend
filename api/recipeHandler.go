@@ -10,6 +10,9 @@ import (
 	"github.com/gorilla/mux"
 )
 
+/*
+HTTP handler for post requests on /recipes
+*/
 func recipeGetHandler(w http.ResponseWriter, r *http.Request) {
 	//retrieve the UserID variable
 	uuid := getUserID(r.Context().Value("user"))
